@@ -7,6 +7,7 @@ const container = document.querySelector('.container');
 card.init();
 const DnD = new DragDrop();
 DnD.init();
+
 window.addEventListener('beforeunload', () => {
   const formData = card.createStorage();
   localStorage.setItem('formData', JSON.stringify(formData));

@@ -27,16 +27,17 @@ export default class DragDrop {
     document.querySelector('.container').appendChild(this.ghostEl);
     this.ghostEl.style.left = `${e.pageX - this.ghostEl.offsetWidth / 2}px`;
     this.ghostEl.style.top = `${e.pageY - this.ghostEl.offsetHeight / 2}px`;
+    this.draggedEl.style.opacity = 0;
     this.empty = document.createElement('li');
     this.empty.classList.add('empty');
     this.empty.style.height = `${this.draggedEl.offsetHeight}px`;
   }
 
   move(e) {
+    e.preventDefault();
     if (!this.draggedEl) {
       return;
     }
-    e.preventDefault();
     this.ghostEl.classList.add('hidden');
     this.elem = document.elementFromPoint(e.clientX, e.clientY);
     this.ghostEl.classList.remove('hidden');
@@ -44,7 +45,6 @@ export default class DragDrop {
     this.ghostEl.style.top = `${e.pageY - this.ghostEl.offsetHeight / 2}px`;
     if (this.elem.closest('.block')) {
       const parentEl = this.elem.closest('.block').querySelector('ul');
-
       if (!parentEl.hasChildNodes()) {
         parentEl.append(this.empty);
       } else if (this.elem.closest('.add_item')) {
@@ -58,13 +58,20 @@ export default class DragDrop {
   }
 
   up(e) {
+    e.preventDefault();
     if (!this.draggedEl) {
       return;
     }
-    e.preventDefault();
+    if (this.elem === undefined) {
+      this.ghostEl.classList.remove('dragged');
+      this.draggedEl.style.opacity = 100;
+      this.ghostEl.remove();
+      this.ghostEl = null;
+      this.draggedEl = null;
+      return;
+    }
     if (!this.elem.closest('.block')) {
       document.querySelector('.container').removeChild(this.ghostEl);
-      document.querySelector('.empty').remove();
       this.draggedEl.style.opacity = 100;
       this.ghostEl = null;
       this.draggedEl = null;
@@ -95,6 +102,7 @@ export default class DragDrop {
     }
     document.querySelector('.container').removeChild(this.ghostEl);
     document.querySelector('.empty').remove();
+    this.draggedEl.style.opacity = 100;
     this.ghostEl = null;
     this.draggedEl = null;
   }
